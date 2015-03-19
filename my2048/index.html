@@ -1,0 +1,40 @@
+<html>
+<head>
+<script type="text/javascript" src='square.js' ></script>
+<script type="text/javascript">
+	var a = new Plate;
+	var bindKey = new BindKey;
+	bindKey.on( 'up', function(){
+		//console.log('up');
+		a.shiftup();
+		updateHtml();
+	});
+	bindKey.on( 'down', function(){
+		//console.log('down');
+		a.shiftdown();
+		updateHtml();
+	});
+	bindKey.on( 'right', function(){
+		console.log('right');
+		a.shiftright();
+		updateHtml();
+	});
+	bindKey.on( 'left', function(){
+		//console.log('left');
+		a.shiftleft();
+		updateHtml();
+	});
+	function updateHtml(){
+		document.getElementById('plate').innerHTML = a.display();
+	}
+</script>
+</head>
+
+<body>
+	<h1>hello</h1>
+	<div id='plate'></div>
+</body>
+<script type="text/javascript">
+	
+</script>
+</html>
