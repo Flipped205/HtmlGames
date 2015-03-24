@@ -6,26 +6,41 @@
     var block_size = 65;
     var plate_offet = { "x" : 3, "y" : 3};
 	var bindKey = new BindKey;
+    var touchMove = new Touch;
 	bindKey.on( 'up', function(){
-		//console.log('up');
 		a.shiftup();
 		//updateHtml();
 	});
 	bindKey.on( 'down', function(){
-		//console.log('down');
 		a.shiftdown();
 		//updateHtml();
 	});
 	bindKey.on( 'right', function(){
-		//console.log('right');
 		a.shiftright();
 		//updateHtml();
 	});
 	bindKey.on( 'left', function(){
-		//console.log('left');
 		a.shiftleft();
 		//updateHtml();
 	});
+
+    touchMove.on( 'up', function(){
+		a.shiftup();
+		//updateHtml();
+	});
+    touchMove.on( 'down', function(){
+		a.shiftdown();
+		//updateHtml();
+	});
+    touchMove.on( 'right', function(){
+		a.shiftright();
+		//updateHtml();
+	});
+    touchMove.on( 'left', function(){
+		a.shiftleft();
+		//updateHtml();
+	});
+
 	a.display = function(action) {
 		if( action == 'create' ) {
 			var i = arguments[1], j = arguments[2], v = arguments[3];

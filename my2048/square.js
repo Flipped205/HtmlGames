@@ -287,7 +287,6 @@ var BindKey = ( function() {
 	        }
 		};
 	}
-
 	return function(){
 		this.on = function( keyname, callback ) {
 			if( typeof callback != 'function' ) {
@@ -303,6 +302,69 @@ var BindKey = ( function() {
 		}
 	}
 })();
+
+
+var Touch = ( function() {
+    var _startY, _startX, _endX, _endY,_difX,_difY;
+    var _swipeUp = function(){};
+    var _swipeDown = function(){};
+    var _swipeLeft = function(){};
+    var _swipeRight = function(){};
+
+    (function init_event() {
+        document.addEventListener('touchstart',touch, false);
+        document.addEventListener('touchmove',touch, false);
+        document.addEventListener('touchend',touch, false);
+        console.log("touch event binded");
+        function touch (event){
+            var event = event || window.event;
+            switch(event.type){
+                case "touchstart":
+                    _startX = event.touches[0].clientX;
+                    _startY = event.touches[0].clientY;
+                    //console.log(_startX + " : " + _startY);
+                    break;
+                case "touchend":
+                    _endX = event.changedTouches[0].clientX;
+                    _endY = event.changedTouches[0].clientY;
+                    //console.log(_endX + " : " + _endY);
+                    _difX = _endX - _startX;
+                    _difY = _endY - _startY;
+                    if( _difX > 50 && Math.abs(_difY) < 50 ) {
+                        console.log("swipe right");
+                        _swipeRight();
+                    } else if( Math.abs(_difX) < 50 && _difY < -50 ) {
+                        console.log("swipe up");
+                        _swipeUp();
+                    } else if( Math.abs(_difX) < 50 && _difY > 50 ) {
+                        console.log("swipe down");
+                        _swipeDown();
+                    } else if(  _difX < -50 && Math.abs(_difY) < 50 ) {
+                        console.log("swipe left");
+                        _swipeLeft();
+                    }
+                    break;
+                case "touchmove":
+                    event.preventDefault();
+                    break;
+            }
+        }
+    })();
+    return function(){
+        this.on = function( keyname, callback ) {
+            if( typeof callback != 'function' ) {
+                return;
+            }
+            switch( keyname ) {
+                case 'up': _swipeUp = callback; break;
+                case 'down': _swipeDown = callback; break;
+                case 'left': _swipeLeft = callback; break;
+                case 'right': _swipeRight = callback; break;
+            }
+        }
+    }
+})();
+
  
 /**
 keycode   37 = Left 
