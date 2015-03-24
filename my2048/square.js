@@ -240,17 +240,25 @@ var Plate = (function(){
 			}
 			_me.randomGenerate();
 		}
+        this.reset = function() {
+            _plate 	= {};
+            _emptyArray = new Array;
+            for( i = 0; i < _height; i ++ ){
+                _plate[i] = {};
+                for( j = 0; j < _width; j ++ ){
+                    _plate[i][j] = new Unit;
+                    emptyArrayPush(i,j);
+                    //console.log( _plate[i][j].value() );
+                }
+            }
+            //console.log("data model clear");
+        }
 	}
 })();
 
 Plate.prototype = {
 	display: function(aciton) {
-
 	}
-}
-function moveBlock( ele, act, distance ) {
-	var width = ele.style.width;
-	console.log(width);
 }
 /**
 
