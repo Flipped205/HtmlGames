@@ -33,6 +33,7 @@ var Plate = (function(){
 		var _height = 4;
 		var _plate 	= {};
 		var _emptyArray = new Array;
+		var _me = this;
 		var i,j;
 
 		for( i = 0; i < _height; i ++ ){
@@ -83,7 +84,7 @@ var Plate = (function(){
 				a.upgrade(b.value());
 				b.clear();
 				emptyArrayPush(m, n);		// push b to emptyArray
-				return 0;
+				return 2;
 			} else if( a.value() === 0 ) { // a is empty, shift it
 				a.set(b.value());
 				b.clear();
@@ -95,20 +96,18 @@ var Plate = (function(){
 			}
 		}
 
-		/*
-		this.getUnit = function(i,j){
-			if( i > _height || j > _width ){
-				return null;
-			}
-			return _plate[i][j];
-		}*/
-
-		this.setUnit = function(i,j,v) {
-			_plate[i][j].set(v);
-			emptyArrayPop(i,j);
+		function displayShift( i, j, m, n, merged ) {
+			//console.log(typeof display);
+			//if(typeof this.display == 'function') 
+			_me.display('shift', i, j, m, n, merged);
+		}
+		
+		function displayCreate(i, j, value) {
+			//if(typeof this.display == 'function') 
+			_me.display('create', i, j, value);
 		}
 
-		this.display = function(){
+		this.displayHTMLText = function () {
 			var str = null;
 			for( var i = 0; i < _height; i++ ){
 				for( var j = 0; j < _width; j++ ){
@@ -142,9 +141,24 @@ var Plate = (function(){
 			rand = parseInt( 2*Math.random() );	// desig
 			if( rand === 0 ) {
 				this.setUnit( l, r, 2 );
+				displayCreate(l,r,2);
 			} else {
 				this.setUnit( l, r, 4 );
+				displayCreate(l,r,4);
 			}
+		}
+
+		/*
+		this.getUnit = function(i,j){
+			if( i > _height || j > _width ){
+				return null;
+			}
+			return _plate[i][j];
+		}*/
+
+		this.setUnit = function(i,j,v) {
+			_plate[i][j].set(v);
+			emptyArrayPop(i,j);
 		}
 
 		this.emptyNum = function() {
@@ -154,16 +168,20 @@ var Plate = (function(){
 		this.shiftup = function() {
 			var result = 0;
 			var m;
-			for( var j = 0; j < _width; j++ ) {
-				for( var i = 0; i < (_height-1); i++ ) {
+			for( var j = 0; j < _width; j++ ) {				// col
+				for( var i = 0; i < (_height-1); i++ ) {	// row
 					m = i;
 					do{
 						result = shift( m, j, m+1, j );
 						m--;
 					} while(result === 1);
+					if( i !== ++m || result === 2) {
+						result === 2 ?  displayShift(m, j, i+1, j, true)        // merge
+										: displayShift(m+1, j, i+1, j, false);  // just shift
+					}
 				}
 			}
-			this.randomGenerate();
+			_me.randomGenerate();
 		}
 
 		this.shiftdown = function() {
@@ -176,9 +194,13 @@ var Plate = (function(){
 						result = shift( m, j, m-1, j );;
 						m++;
 					} while(result == 1);
+					if( i !== --m  || result === 2) {
+						result === 2 ?  displayShift(m, j, i-1, j, true)
+										: displayShift(m-1, j, i-1, j, false);
+					}
 				}
 			}
-			this.randomGenerate();
+			_me.randomGenerate();
 		}
 
 		this.shiftleft = function() {
@@ -191,9 +213,13 @@ var Plate = (function(){
 						result = shift( i, m, i, m+1 );
 						m--;
 					} while(result === 1);
+					if( j !== ++m  || result === 2) {
+						result === 2 ?  displayShift(i, m, i, j+1, true)
+										: displayShift(i, m+1, i, j+1, false);
+					}
 				}
 			}
-			this.randomGenerate();
+			_me.randomGenerate();
 		}
 
 		this.shiftright = function() {
@@ -206,14 +232,26 @@ var Plate = (function(){
 						result = shift( i, m, i, m-1 );
 						m++;
 					} while(result === 1);
+					if( j !== --m  || result === 2) {
+						result === 2 ?  displayShift(i, m, i, j-1, true)
+										: displayShift(i, m-1, i, j-1, false);
+					}
 				}
 			}
-			this.randomGenerate();
+			_me.randomGenerate();
 		}
-
 	}
 })();
 
+Plate.prototype = {
+	display: function(aciton) {
+
+	}
+}
+function moveBlock( ele, act, distance ) {
+	var width = ele.style.width;
+	console.log(width);
+}
 /**
 
 */
