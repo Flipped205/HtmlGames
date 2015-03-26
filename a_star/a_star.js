@@ -20,9 +20,11 @@ var AStar = function(map, mapW, mapH, src, dest){
 	}
 	function getDistance(src, dest){
 		var d_x = dest.x - src.x;
-		var d_y = 
-		dest.y - src.y;
-		return Math.floor( Math.sqrt(d_x*d_x+d_y*d_y)*10 );
+		var d_y = dest.y - src.y;
+		return Math.floor(Math.sqrt(d_x*d_x+d_y*d_y)*10);
+	}
+	function getDistanceToDest(src){
+		return Math.abs(dest.x-src.x) + Math.abs(dest.x-src.x)*10;
 	}
 	function isInOpenList(i,j){
 		return _openList.isExist(i,j)
@@ -37,7 +39,7 @@ var AStar = function(map, mapW, mapH, src, dest){
 			return false;
 		} else if( s_i !== i && s_j !== j ){	//   ?(-1,-1)   O(-1,0)	?(-1,1)
 			var d_i = i - s_i;					//	 O(0,-1)  	s(0,0)
-			var d_j = i - s_i;					//   ?(1,-1)   			?(1,1)
+			var d_j = j - s_j;					//   ?(1,-1)   			?(1,1)
 			if( _map[index(s_i+d_i,s_j)]>0 || _map[index(s_i,s_j+d_j)]>0){
 				return false;
 			} else {
@@ -71,12 +73,25 @@ var AStar = function(map, mapW, mapH, src, dest){
 			for(var i = start.x; i <= stop.x; ++i) {
 				for(var j = start.y; j <= stop.y; ++j) {
 					if( isInClosedList(i,j) || !isPassable(i,j) ) {	// cannot pass or in the closedList
+						continue;
 					} else if( !isInOpenList(i,j) ){				// not in the openList
 						var temp_node = new Node(_currentNode, {x : i, y : j} );
-						temp_node.G = _currentNode.G + 10;
-						temp_node.H = getDistance(temp_node, dest);
+						temp_node.G = _currentNode.G + getDistance(temp_node, _currentNode);
+						temp_node.H = getDistanceToDest(temp_node);
 						temp_node.F = temp_node.G + temp_node.H;
 						_openList.add(temp_node);
+						continue;
+					} else {										//alreay in the openList
+						var temp_dest = _openList.get(0);			// the destination of this move
+						//console.log(temp_dest.parent.x + ": "+temp_dest.parent.y)
+						var temp_G = _currentNode.G + getDistance(temp_dest, _currentNode);	// G after this move
+						if( temp_G > temp_dest.G)  {				// if there is a better way
+							_currentNode = _currentNode.parent;		// return to the old node
+						} else {									// continue the path
+							temp_dest.parent = _currentNode;
+							temp_dest.G = temp_G;
+							temp_dest.F = temp_dest.G + temp_dest.H;
+						}	
 					}
 				}
 			}
@@ -110,16 +125,16 @@ var AStar = function(map, mapW, mapH, src, dest){
 			} if( _path.isExist(a,b) ){
 				return '*';
 			} else {
-				return  _map[temp] ? 'X' : '0';
+				return  _map[temp] ? '■' : '0';
 			}
 		}
 		for(var i=0; i < _mapH; ++i){
 			for(var j=0; j < _mapW; j++) {
 				if(str === null) {
-					str =  getSymble(i,j) + '\t\t';
+					str =  getSymble(i,j) + '\t';
 				}
 				else {
-					str += getSymble(i,j) + '\t\t';
+					str += getSymble(i,j) + '\t';
 				}
 			}
 			str += '\n';
@@ -176,6 +191,6 @@ var NodeList = function(sort, sortParam){
 		return false;
 	}
 	this.printData = function(){
-		console.log(_data);
+		console.log(_data.length);
 	}
 };
