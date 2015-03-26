@@ -37,7 +37,7 @@ var aStar = function(tileMap, gridW, gridH, src, dest, createPositions) {
         if (this.checkDifference(this.currentNode, this.dest)) {  
             // 到达目的地 :)  
             break;  
-        }  
+        }
         this.closedList.add(this.currentNode);  
         this.openList.remove(0);  
         // 检查与当前节点相近的8 个元素  

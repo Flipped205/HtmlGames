@@ -6,12 +6,19 @@
         web workers)</title>
         <script type="text/javascript" src="a_star.js"></script> 
         <script>  
-            var map = [0,0,0,0, 0,1,0,0, 0,0,0,0];
-            var a_star = new AStar(map, 4, 3, {x:0,y:0}, {x:2,y:0});
+            var map = [ 0,1,0,0,0,0,0, 
+                        0,0,0,0,1,0,1,
+                        0,1,0,0,1,0,0,
+                        0,1,0,1,1,1,0,
+                        0,1,0,1,1,0,0];
+            var a_star = new AStar(map, 7, 5, {x:4,y:5}, {x:2,y:0});
+            a_star.printOpenList();
+            a_star.printMap();
+            a_star.createPath();
             a_star.printMap();
         </script>  
     </head>  
     <body>  
         <h1>A*</h1>
-    </body>  
+    </body>     
 </html>  
