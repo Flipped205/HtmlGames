@@ -12,6 +12,7 @@ var AStar = function(map, mapW, mapH, src, dest){
 	var _count = 0;
 	var _arrived = false;
 	_openList.add(new Node(null, src));// set start point
+	console.log(_openList.printData());
 	function index(i,j){
 		var temp = i*_mapW + j;
 		return temp < 0 ? -1 :
@@ -19,12 +20,22 @@ var AStar = function(map, mapW, mapH, src, dest){
 			   temp ;
 	}
 	function getDistance(src, dest){
-		var d_x = dest.x - src.x;
-		var d_y = dest.y - src.y;
-		return Math.floor(Math.sqrt(d_x*d_x+d_y*d_y)*10);
+		var d_x = Math.abs(dest.x - src.x);
+		var d_y = Math.abs(dest.y - src.y);
+		if(d_x === 0 || d_y === 0) {
+			return d_x === 0 ? d_y*10 :
+				   d_y === 0 ? d_x*10 :
+								  0; 
+		} else if(d_x === d_y) {
+			return d_x * 14;
+		} else {
+			return d_x > d_y ? (d_x - d_y) * 14 + d_y * 10 :
+							   (d_y - d_x) * 14 + d_x * 10 ;
+		}
+		//return Math.floor(Math.sqrt(d_x*d_x+d_y*d_y)*10);
 	}
 	function getDistanceToDest(src){
-		return Math.abs(dest.x-src.x) + Math.abs(dest.x-src.x)*10;
+		return Math.abs(dest.x-src.x)*10 + Math.abs(dest.y-src.y)*10;
 	}
 	function isInOpenList(i,j){
 		return _openList.isExist(i,j)
@@ -58,6 +69,8 @@ var AStar = function(map, mapW, mapH, src, dest){
 		while(!_openList.isEmpty()){
 			_currentNode = _openList.pop(0);	// get the shortest node
 			_closedList.add(_currentNode);		// add to the closed list
+			//console.log("!!!!!!!!!!!!!!!!!!!!!new current node: " );
+			//console.log(_currentNode);
 			if(isArrived(_currentNode)){
 				_arrived = true;
 				break;
@@ -75,23 +88,35 @@ var AStar = function(map, mapW, mapH, src, dest){
 					if( isInClosedList(i,j) || !isPassable(i,j) ) {	// cannot pass or in the closedList
 						continue;
 					} else if( !isInOpenList(i,j) ){				// not in the openList
+						//console.log("new node");
 						var temp_node = new Node(_currentNode, {x : i, y : j} );
 						temp_node.G = _currentNode.G + getDistance(temp_node, _currentNode);
 						temp_node.H = getDistanceToDest(temp_node);
 						temp_node.F = temp_node.G + temp_node.H;
 						_openList.add(temp_node);
+						//console.log(temp_node);
 						continue;
 					} else {										//alreay in the openList
-						var temp_dest = _openList.get(0);			// the destination of this move
+						//console.log("alread in the open list");
+						var temp_dest = _openList.getByIndex(i,j);			// the destination of this move
 						//console.log(temp_dest.parent.x + ": "+temp_dest.parent.y)
+						//console.log("temp_dest: ");
+						//console.log(temp_dest);
 						var temp_G = _currentNode.G + getDistance(temp_dest, _currentNode);	// G after this move
 						if( temp_G > temp_dest.G)  {				// if there is a better way
-							_currentNode = _currentNode.parent;		// return to the old node
+							//console.log("return to: ");
+							//console.log(_currentNode.parent);
+							if(temp_dest.F < _currentNode.F) {		// if it is a better path
+								_currentNode = _currentNode.parent;		// return to the old node
+							}
 						} else {									// continue the path
 							temp_dest.parent = _currentNode;
 							temp_dest.G = temp_G;
+							temp_dest.H = getDistanceToDest(temp_dest);
 							temp_dest.F = temp_dest.G + temp_dest.H;
-						}	
+							//console.log("cotinue and change the parent of: ");
+							//console.log(temp_dest);
+						}
 					}
 				}
 			}
@@ -105,7 +130,7 @@ var AStar = function(map, mapW, mapH, src, dest){
 		}
 			};
 	this.getPath = function(){
-		return _path;
+		return _path.getData();
 	};
 	this.printOpenList = function(){
 		console.log(_openList.get(0));
@@ -159,6 +184,14 @@ var NodeList = function(sort, sortParam){
 	this.get = function(index) {
 		return _data[index];
 	};
+	this.getByIndex = function(x, y) {
+		for(var i in _data) {
+			if(_data[i].x === x && _data[i].y === y){
+				return _data[i];
+			}
+		}
+		return false;
+	}
 	this.add = function(node) {
 		_data.push(node);
 		if(_sort) {
@@ -192,5 +225,8 @@ var NodeList = function(sort, sortParam){
 	}
 	this.printData = function(){
 		console.log(_data.length);
+	}
+	this.getData = function(){
+		return _data;
 	}
 };
